@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,6 +35,203 @@
 </head>
 <body>
 
+    <div id="screen-card" class="screen">
+        <div class="card">
+            <h1 style="color: var(--pink)">Happy Valentine's Day</h1>
+            <h3>To: Amberly Valanka Fernandes</h3>
+            <button onclick="showSection('screen-slideshow')">Open 💌</button>
+        </div>
+    </div>
+
+    <div id="screen-slideshow" class="screen hidden">
+        <img id="display-img" src="Snapchat-1108914825.jpg">
+        <p id="slide-text" style="font-size: 1.3rem; italic; margin: 0 20px;"></p>
+        <button onclick="nextSlide()">Next Moment ❤️</button>
+    </div>
+
+    <div id="screen-letter" class="screen hidden">
+        <div class="letter-content">
+            <h2 style="text-align:center">My Dearest Amberly,</h2>
+            <p id="letter-text">
+                To my first love and my ultimate foodie girl, Amberly Valanka Fernandes. I wanted to write something that truly captures how I feel about you. From the first day we met, you’ve brought a flavor to my life that I never knew was missing. Like my favorite meal, you are comforting, exciting, and something I can never get enough of. 
+
+                Seeing your face in these photos reminds me of every laugh we’ve shared and every goofy filter we’ve ever used. You have this incredible way of making even the simplest moments feel like a grand adventure. Whether we are hunting for the best food in town or just sitting together in silence, my heart is always full because I’m with you. 
+
+                You aren't just my girlfriend; you are my best friend. I admire your spirit, your beauty, and especially your appetite for life (and snacks!). Being your "first love" is a title I carry with so much pride. I promise to keep exploring new cuisines, new places, and new reasons to fall in love with you every single day. 
+
+                I know things aren't always perfect, but with you, they are always worth it. You are my sunshine on a cloudy day and my peace in a loud world. I wrote this long message because 300 words still feel too short to describe how much I cherish you, Amberly. You are the "spice" in my life, the sweetness in my heart, and the girl I want to walk beside forever.
+
+                I love you more than all the pizzas and chocolates in the world!
+            </p>
+        </div>
+        <button onclick="showSection('screen-proposal')">Continue...</button>
+    </div>
+
+    <div id="screen-proposal" class="screen hidden">
+        <h1 style="font-size: 3rem;">Will you be my Valentine?</h1>
+        <div>
+            <button onclick="respond('yes')">YES! ❤️</button>
+            <button id="no-btn" onmouseover="moveNo()" onclick="respond('no')">NO 😭</button>
+        </div>
+    </div>
+
+    <div id="screen-game" class="screen hidden">
+        <h2>Valentine's Quest</h2>
+        <p>Jump over other boys! Get 💋 to slow them down!</p>
+        <div id="gameContainer">
+            <div class="game-ui">Score: <span id="score">0</span></div>
+            <canvas id="gameCanvas" width="600" height="300"></canvas>
+        </div>
+        <button id="jumpBtn" style="width: 200px; height: 80px; font-size: 1.5rem;">JUMP!</button>
+    </div>
+
+    <div id="screen-video" class="screen hidden">
+        <h1 style="color: var(--pink)">YOU WON MY HEART! 🏆</h1>
+        <video id="finalVid" width="300" height="500" controls>
+            <source src="Snapchat-746107905.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        const images = [
+            { src: 'Snapchat-1108914825.jpg', msg: "The first time you stole my heart..." },
+            { src: 'Snapchat-2038672580.jpg', msg: "My beautiful foodie girl!" },
+            { src: 'Snapchat-359429037.jpg', msg: "I love our goofy moments together." },
+            { src: 'Snapchat-756657078.jpg', msg: "Every photo of you is my favorite." },
+            { src: 'Snapchat-502016680.jpg', msg: "Amberly, you are simply amazing." }
+        ];
+
+        let currentSlide = 0;
+        function nextSlide() {
+            currentSlide++;
+            if (currentSlide < images.length) {
+                document.getElementById('display-img').src = images[currentSlide].src;
+                document.getElementById('slide-text').innerText = images[currentSlide].msg;
+            } else {
+                showSection('screen-letter');
+            }
+        }
+        document.getElementById('slide-text').innerText = images[0].msg;
+
+        function showSection(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'screen-game') initGame();
+        }
+
+        function moveNo() {
+            const btn = document.getElementById('no-btn');
+            btn.style.position = 'absolute';
+            btn.style.left = Math.random() * 80 + 'vw';
+            btn.style.top = Math.random() * 80 + 'vh';
+        }
+
+        function respond(type) {
+            const emoji = type === 'yes' ? '❤️' : '😭';
+            for(let i=0; i<40; i++) {
+                const e = document.createElement('div');
+                e.className = 'falling';
+                e.innerText = emoji;
+                e.style.left = Math.random() * 100 + 'vw';
+                e.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                e.style.animationDelay = (Math.random() * 2) + 's';
+                document.body.appendChild(e);
+            }
+            if(type === 'yes') {
+                setTimeout(() => {
+                    alert("A surprise awaits! But first, win the game for Amberly!");
+                    showSection('screen-game');
+                }, 2000);
+            }
+        }
+
+        // --- GAME LOGIC ---
+        function initGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let gameSpeed = 4;
+            let isGameOver = false;
+
+            const playerImg = new Image(); playerImg.src = 'Snapchat-1915880898.jpg'; // Your small image
+            
+            let player = { x: 50, y: 200, w: 40, h: 40, dy: 0, jumpForce: 12, gravity: 0.6, grounded: false };
+            let obstacles = [];
+            let boosters = [];
+
+            function spawnObstacle() {
+                if(!isGameOver) obstacles.push({ x: 650, y: 240, w: 30, h: 50 });
+                setTimeout(spawnObstacle, Math.random() * 2000 + 1000);
+            }
+
+            function spawnBooster() {
+                if(!isGameOver) boosters.push({ x: 650, y: 150, w: 30, h: 30 });
+                setTimeout(spawnBooster, 5000);
+            }
+
+            function jump() {
+                if(player.grounded) {
+                    player.dy = -player.jumpForce;
+                    player.grounded = false;
+                }
+            }
+
+            document.getElementById('jumpBtn').onclick = jump;
+            window.addEventListener('keydown', (e) => { if(e.code === 'Space') jump(); });
+
+            spawnObstacle();
+            spawnBooster();
+
+            function update() {
+                if(isGameOver) return;
+                ctx.clearRect(0,0,600,300);
+
+                // Player Logic
+                player.dy += player.gravity;
+                player.y += player.dy;
+                if(player.y > 240) { player.y = 240; player.grounded = true; }
+                ctx.drawImage(playerImg, player.x, player.y, player.w, player.h);
+
+                // Obstacles (Other Boys)
+                obstacles.forEach((ob, i) => {
+                    ob.x -= gameSpeed;
+                    ctx.fillStyle = "#333";
+                    ctx.fillRect(ob.x, ob.y, ob.w, ob.h);
+                    ctx.fillStyle = "white"; ctx.fillText("Boy", ob.x, ob.y-5);
+
+                    if(player.x < ob.x + ob.w && player.x + player.w > ob.x && player.y < ob.y + ob.h && player.y + player.h > ob.y) {
+                        alert("Oops! Try again!");
+                        obstacles = []; score = 0; gameSpeed = 4;
+                    }
+                    if(ob.x < -30) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
+                });
+
+                // Boosters (Kiss 💋)
+                boosters.forEach((b, i) => {
+                    b.x -= gameSpeed;
+                    ctx.font = "20px Arial";
+                    ctx.fillText("💋", b.x, b.y);
+
+                    if(player.x < b.x + 20 && player.x + player.w > b.x && player.y < b.y + 20 && player.y + player.h > b.y) {
+                        boosters.splice(i,1);
+                        gameSpeed = 2; // Slow down
+                        setTimeout(() => { gameSpeed = 4 + (score/10); }, 3000);
+                    }
+                });
+
+                if(score >= 10) {
+                    isGameOver = true;
+                    showSection('screen-video');
+                    document.getElementById('finalVid').play();
+                }
+
+                requestAnimationFrame(update);
+            }
+            update();
+        }
+    </script>
+</body>
+</html>
     <div id="screen-card" class="screen">
         <div class="card">
             <h1 style="color: var(--pink)">Happy Valentine's Day</h1>
@@ -232,4 +429,5 @@
     </script>
 </body>
 </html>
+
 
