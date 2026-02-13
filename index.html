@@ -1,227 +1,235 @@
-     <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Valentine Game</title>
-
-<style>
-body{
-margin:0;
-font-family:sans-serif;
-background:#fff0f3;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-height:100vh;
-}
-
-canvas{
-background:#87CEEB;
-border-radius:10px;
-box-shadow:0 0 20px rgba(0,0,0,0.2);
-}
-
-#ui{
-margin-top:10px;
-font-size:20px;
-font-weight:bold;
-}
-
-button{
-margin-top:10px;
-padding:12px 25px;
-font-size:18px;
-border:none;
-border-radius:30px;
-background:#ff4d6d;
-color:white;
-cursor:pointer;
-}
-
-.hidden{display:none;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Amberly Valanka Fernandes</title>
+    <style>
+        :root { --pink: #ff4d6d; --dark: #590d22; --light: #fff0f3; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--light); color: var(--dark); overflow: hidden; }
+        .screen { position: absolute; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 0.5s; background: var(--light); }
+        .hidden { display: none !important; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px dashed var(--pink); }
+        #display-img { max-width: 85%; max-height: 50vh; border: 8px solid white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .letter-content { width: 85%; max-height: 65vh; overflow-y: auto; background: white; padding: 30px; border-radius: 15px; border-left: 5px solid var(--pink); text-align: left; line-height: 1.6; white-space: pre-line; }
+        button { background: var(--pink); color: white; border: none; padding: 15px 35px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 10px; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.4); }
+        #no-btn { background: #999; }
+        canvas { background: #87CEEB; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        #gameContainer { position: relative; }
+        .game-ui { position: absolute; top: 10px; left: 10px; font-weight: bold; color: white; text-shadow: 1px 1px 2px black; }
+        .falling { position: absolute; pointer-events: none; z-index: 100; animation: fall 3s linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+    </style>
 </head>
-
 <body>
 
-<canvas id="game" width="600" height="300"></canvas>
+    <div id="screen-card" class="screen">
+        <div class="card">
+            <h1 style="color: var(--pink)">Happy Valentine's Day</h1>
+            <h3>To: Amberly Valanka Fernandes</h3>
+            <button onclick="showSection('screen-slideshow')">Open 💌</button>
+        </div>
+    </div>
 
-<div id="ui">
-Score: <span id="score">0</span>
-</div>
+    <div id="screen-slideshow" class="screen hidden">
+        <img id="display-img" src="Snapchat-1108914825.jpg">
+        <p id="slide-text" style="font-size: 1.3rem; font-style: italic; margin: 0 20px;"></p>
+        <button onclick="nextSlide()">Next Moment ❤️</button>
+    </div>
 
-<button id="jumpBtn">JUMP</button>
-<button id="restartBtn" class="hidden">Restart</button>
+    <div id="screen-letter" class="screen hidden">
+        <div class="letter-content">
+            <h2 style="text-align:center">My Dearest Amberly,</h2>
+            <p id="letter-text">To my first love and my ultimate foodie girl, Amberly Valanka Fernandes. I wanted to write something that truly captures how I feel about you. From the first day we met, you’ve brought a flavor to my life that I never knew was missing. Like my favorite meal, you are comforting, exciting, and something I can never get enough of. 
 
-<script>
+Seeing your face in these photos reminds me of every laugh we’ve shared and every goofy filter we’ve ever used. You have this incredible way of making even the simplest moments feel like a grand adventure. Whether we are hunting for the best food in town or just sitting together in silence, my heart is always full because I’m with you. 
 
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
+You aren't just my girlfriend; you are my best friend. I admire your spirit, your beauty, and especially your appetite for life (and snacks!). Being your "first love" is a title I carry with so much pride. I promise to keep exploring new cuisines, new places, and new reasons to fall in love with you every single day. 
 
-let score=0;
-let speed=4;
-let running=true;
+I know things aren't always perfect, but with you, they are always worth it. You are my sunshine on a cloudy day and my peace in a loud world. I wrote this long message because 300 words still feel too short to describe how much I cherish you, Amberly. You are the "spice" in my life, the sweetness in my heart, and the girl I want to walk beside forever.
 
-const scoreText=document.getElementById("score");
-const restartBtn=document.getElementById("restartBtn");
+I love you more than all the pizzas and chocolates in the world!</p>
+        </div>
+        <button onclick="showSection('screen-proposal')">Continue...</button>
+    </div>
 
-const jumpSound=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-jump-coin-216.wav");
-const hitSound=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.wav");
+    <div id="screen-proposal" class="screen hidden">
+        <h1 style="font-size: 3rem;">Will you be my Valentine?</h1>
+        <div>
+            <button onclick="respond('yes')">YES! ❤️</button>
+            <button id="no-btn" onmouseover="moveNo()" onclick="respond('no')">NO 😭</button>
+        </div>
+    </div>
 
-const playerImg=new Image();
-playerImg.src="";
+    <div id="screen-game" class="screen hidden">
+        <h2>Valentine's Quest</h2>
+        <div id="gameContainer">
+            <div class="game-ui">Score: <span id="score">0</span></div>
+            <canvas id="gameCanvas" width="600" height="300"></canvas>
+        </div>
+        <button id="jumpBtn" style="width: 200px; height: 80px; font-size: 1.5rem;">JUMP!</button>
+    </div>
 
-let player={
-x:60,
-y:215,
-w:40,
-h:40,
-dy:0,
-gravity:0.7,
-jump:13,
-grounded:true
-};
+    <div id="screen-video" class="screen hidden">
+        <h1 style="color: var(--pink)">YOU WON MY HEART! 🏆</h1>
+        <video id="finalVid" width="300" height="500" controls>
+            <source src="Snapchat-746107905.mp4" type="video/mp4">
+        </video>
+    </div>
 
-let obstacles=[];
-let boosters=[];
+    <script>
+        const images = [
+            { src: 'Snapchat-1108914825.jpg', msg: "The first time you stole my heart..." },
+            { src: 'Snapchat-2038672580.jpg', msg: "My beautiful foodie girl!" },
+            { src: 'Snapchat-359429037.jpg', msg: "I love our goofy moments together." },
+            { src: 'Snapchat-756657078.jpg', msg: "Every photo of you is my favorite." },
+            { src: 'Snapchat-502016680.jpg', msg: "Amberly, you are simply amazing." }
+        ];
 
-function spawnObstacle(){
-if(!running) return;
+        let currentSlide = 0;
+        function nextSlide() {
+            currentSlide++;
+            if (currentSlide < images.length) {
+                document.getElementById('display-img').src = images[currentSlide].src;
+                document.getElementById('slide-text').innerText = images[currentSlide].msg;
+            } else { showSection('screen-letter'); }
+        }
+        document.getElementById('slide-text').innerText = images[0].msg;
 
-obstacles.push({
-x:620,
-y:215,
-w:35,
-h:45
-});
+        function showSection(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'screen-game') initGame();
+        }
 
-setTimeout(spawnObstacle,1200+Math.random()*1500);
-}
+        function moveNo() {
+            const btn = document.getElementById('no-btn');
+            btn.style.position = 'absolute';
+            btn.style.left = Math.random() * 80 + 'vw';
+            btn.style.top = Math.random() * 80 + 'vh';
+        }
 
-function spawnBooster(){
-if(!running) return;
+        function respond(type) {
+            const emoji = type === 'yes' ? '❤️' : '😭';
+            for(let i=0; i<40; i++) {
+                const e = document.createElement('div');
+                e.className = 'falling';
+                e.innerText = emoji;
+                e.style.left = Math.random() * 100 + 'vw';
+                e.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                e.style.animationDelay = (Math.random() * 2) + 's';
+                document.body.appendChild(e);
+            }
+            if(type === 'yes') {
+                setTimeout(() => {
+                    alert("Reach 10 points to unlock the surprise!");
+                    showSection('screen-game');
+                }, 2000);
+            }
+        }
 
-boosters.push({
-x:620,
-y:150,
-w:30,
-h:30
-});
+        function initGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let gameSpeed = 4;
+            let isGameOver = false;
 
-setTimeout(spawnBooster,6000);
-}
+            // Load Player Image
+            const playerImg = new Image();
+            playerImg.src = 'Snapchat-1915880898.jpg';
+            
+            let player = { x: 50, y: 210, w: 45, h: 45, dy: 0, jumpForce: 13, gravity: 0.7, grounded: false };
+            let obstacles = [];
+            let boosters = [];
 
-function jump(){
-if(player.grounded && running){
-player.dy=-player.jump;
-player.grounded=false;
-jumpSound.currentTime=0;
-jumpSound.play();
-}
-}
+            function spawnObstacle() {
+                if(!isGameOver && !document.getElementById('screen-game').classList.contains('hidden')) {
+                    obstacles.push({ x: 650, y: 210, w: 35, h: 50 });
+                }
+                setTimeout(spawnObstacle, Math.random() * 2000 + 1000);
+            }
 
-document.getElementById("jumpBtn").onclick=jump;
-window.addEventListener("keydown",e=>{
-if(e.code==="Space") jump();
-});
+            function spawnBooster() {
+                if(!isGameOver && !document.getElementById('screen-game').classList.contains('hidden')) {
+                    boosters.push({ x: 650, y: 140, w: 30, h: 30 });
+                }
+                setTimeout(spawnBooster, 6000);
+            }
 
-function collide(a,b){
-return a.x<a.x+a.w &&
-a.x+a.w>b.x &&
-a.y<b.y+b.h &&
-a.y+a.h>b.y;
-}
+            function jump() {
+                if(player.grounded) {
+                    player.dy = -player.jumpForce;
+                    player.grounded = false;
+                }
+            }
 
-function gameOver(){
-running=false;
-hitSound.play();
-restartBtn.classList.remove("hidden");
-}
+            document.getElementById('jumpBtn').onclick = jump;
+            window.addEventListener('keydown', (e) => { if(e.code === 'Space') jump(); });
 
-restartBtn.onclick=()=>{
-location.reload();
-};
+            spawnObstacle();
+            spawnBooster();
 
-function update(){
-try{
+            function update() {
+                if(isGameOver) return;
+                ctx.clearRect(0,0,600,300);
 
-ctx.clearRect(0,0,600,300);
+                // Draw Ground
+                ctx.fillStyle = "#2ecc71";
+                ctx.fillRect(0, 260, 600, 40);
 
-ctx.fillStyle="#2ecc71";
-ctx.fillRect(0,260,600,40);
+                // Player logic
+                player.dy += player.gravity;
+                player.y += player.dy;
+                if(player.y > 215) { player.y = 215; player.grounded = true; }
+                
+                // Draw player
+                if (playerImg.complete && playerImg.naturalWidth !== 0) {
+                    ctx.drawImage(playerImg, player.x, player.y, player.w, player.h);
+                } else {
+                    ctx.fillStyle = "red"; // Square shows up even if GitHub image fails
+                    ctx.fillRect(player.x, player.y, player.w, player.h);
+                }
 
-player.dy+=player.gravity;
-player.y+=player.dy;
+                // Obstacles
+                obstacles.forEach((ob, i) => {
+                    ob.x -= gameSpeed;
+                    ctx.fillStyle = "#333";
+                    ctx.fillRect(ob.x, ob.y, ob.w, ob.h);
+                    ctx.fillStyle = "white";
+                    ctx.fillText("Boy", ob.x + 5, ob.y - 5);
 
-if(player.y>215){
-player.y=215;
-player.grounded=true;
-}
+                    if(player.x < ob.x + ob.w && player.x + player.w > ob.x && player.y < ob.y + ob.h && player.y + player.h > ob.y) {
+                        isGameOver = true;
+                        alert("Oops! Try again for Amberly! ❤️");
+                        location.reload(); 
+                    }
+                    if(ob.x < -40) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
+                });
 
-if(playerImg.complete && playerImg.naturalWidth!==0){
-ctx.drawImage(playerImg,player.x,player.y,player.w,player.h);
-}else{
-ctx.fillStyle="red";
-ctx.fillRect(player.x,player.y,player.w,player.h);
-}
+                // Boosters
+                boosters.forEach((b, i) => {
+                    b.x -= gameSpeed;
+                    ctx.font = "24px Arial";
+                    ctx.fillText("💋", b.x, b.y);
 
-obstacles.forEach((o,i)=>{
-o.x-=speed;
+                    if(player.x < b.x + 25 && player.x + player.w > b.x && player.y < b.y + 25 && player.y + player.h > b.y) {
+                        boosters.splice(i,1);
+                        gameSpeed = 2.5; 
+                        setTimeout(() => { gameSpeed = 4; }, 3000);
+                    }
+                });
 
-ctx.fillStyle="#333";
-ctx.fillRect(o.x,o.y,o.w,o.h);
+                if(score >= 10) {
+                    isGameOver = true;
+                    showSection('screen-video');
+                    document.getElementById('finalVid').play();
+                }
 
-if(player.x<o.x+o.w &&
-player.x+player.w>o.x &&
-player.y<o.y+o.h &&
-player.y+player.h>o.y){
-gameOver();
-}
-
-if(o.x<-50){
-obstacles.splice(i,1);
-score++;
-scoreText.innerText=score;
-
-if(score%5===0) speed+=0.5;
-}
-});
-
-boosters.forEach((b,i)=>{
-b.x-=speed;
-
-ctx.font="24px Arial";
-ctx.fillText("💋",b.x,b.y);
-
-if(player.x<b.x+25 &&
-player.x+player.w>b.x &&
-player.y<b.y+25 &&
-player.y+player.h>b.y){
-
-boosters.splice(i,1);
-speed=2.5;
-
-setTimeout(()=>{
-speed=4+score*0.1;
-},3000);
-}
-});
-
-if(running) requestAnimationFrame(update);
-
-}catch(err){
-console.log(err);
-requestAnimationFrame(update);
-}
-}
-
-spawnObstacle();
-spawnBooster();
-update();
-
-</script>
-
+                requestAnimationFrame(update);
+            }
+            update();
+        }
+    </script>
 </body>
-</html>               
+</html>
