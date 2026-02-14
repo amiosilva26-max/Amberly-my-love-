@@ -9,25 +9,16 @@
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); overflow: hidden; touch-action: manipulation; }
         .screen { position: absolute; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 0.5s; background: var(--light); z-index: 10; }
         .hidden { display: none !important; }
-        
-        /* UI Elements */
         .card { background: white; padding: 25px; width: 85%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px dashed var(--pink); box-sizing: border-box; }
         #display-img { max-width: 90%; max-height: 40vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
         .letter-content { width: 85%; max-height: 55vh; overflow-y: auto; background: white; padding: 20px; border-radius: 15px; border-left: 5px solid var(--pink); text-align: left; font-size: 0.9rem; line-height: 1.5; white-space: pre-line; box-sizing: border-box; }
-        
-        /* Buttons */
         button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 10px; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3); transition: 0.2s; }
         #no-btn { background: #555; position: relative; }
         .surprise-btn { background: #ff0054; font-size: 1.5rem; padding: 20px 40px; animation: pulse 1.5s infinite; }
-        
-        /* Game Area */
         #gameCanvas { background: #87CEEB; width: 100vw; height: 50vh; display: block; border-top: 4px solid var(--pink); }
         #touch-zone { width: 100vw; height: 25vh; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: var(--pink); font-size: 1.2rem; }
-
-        /* Video Styling */
         .video-container { width: 300px; height: 530px; background: #000; border-radius: 15px; overflow: hidden; box-shadow: 0 0 25px var(--pink); border: 4px solid white; position: relative; }
         video { width: 100%; height: 100%; object-fit: cover; }
-
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
@@ -75,7 +66,6 @@
         <canvas id="gameCanvas"></canvas>
         <div id="touch-zone" onclick="handleJump()">
             <span>TAP TO JUMP!</span>
-            <span style="font-size: 0.8rem; font-weight: normal;">(Meet me at 10 points)</span>
         </div>
     </div>
 
@@ -91,8 +81,7 @@
                 <source src="surprise.mp4" type="video/mp4">
             </video>
         </div>
-        <p id="vid-error" style="color:red; font-size:0.8rem; display:none;">Video not found. Check if it's named surprise.mp4</p>
-        <button onclick="location.reload()">Watch Again ❤️</button>
+        <button onclick="location.reload()" style="margin-top:20px;">Watch Again ❤️</button>
     </div>
 
     <script>
@@ -113,7 +102,8 @@
 
         function showSection(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+            const target = document.getElementById(id);
+            if(target) target.classList.remove('hidden');
             if(id === 'screen-game') initGame();
         }
 
@@ -144,7 +134,7 @@
         function respond(type) {
             if(type === 'yes') {
                 const v = document.getElementById('finalVid');
-                v.load(); // Forces browser to find video early
+                v.load(); 
                 showSection('screen-game');
             }
         }
@@ -152,9 +142,7 @@
         function playFinalSurprise() {
             showSection('screen-video');
             const v = document.getElementById('finalVid');
-            v.play().catch(() => {
-                document.getElementById('vid-error').style.display = 'block';
-            });
+            v.play().catch(e => console.log("Play failed", e));
         }
 
         function initGame() {
@@ -191,9 +179,12 @@
             if(!isGameOver) {
                 ctx.clearRect(0,0, canvas.width, canvas.height);
                 ctx.fillStyle = "#2ecc71"; ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+                
                 player.dy += player.gravity; player.y += player.dy;
                 if(player.y > canvas.height - 80) { player.y = canvas.height - 80; player.grounded = true; }
+                
                 ctx.font = "40px Arial"; ctx.fillText("💃", player.x, player.y + 40);
+
                 obstacles.forEach((ob, i) => {
                     ob.x -= gameSpeed; ctx.fillText("🧍‍♂️", ob.x, ob.y + 35);
                     if(player.x < ob.x + 25 && player.x + 35 > ob.x && player.y < ob.y + 25 && player.y + 35 > ob.y) {
@@ -202,18 +193,29 @@
                     }
                     if(ob.x < -50) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
                 });
+
                 if (score >= 10) {
-                    if (targetMe.x > canvas.width - 120) targetMe.x -= 2;
-                    if (myImg.complete) ctx.drawImage(myImg, targetMe.x, targetMe.y, targetMe.w, targetMe.h);
-                    if (player.x + player.w > targetMe.x + 10) {
+                    if (targetMe.x > canvas.width - 120) targetMe.x -= 2.5;
+                    if (myImg.complete) {
+                        ctx.drawImage(myImg, targetMe.x, targetMe.y, targetMe.w, targetMe.h);
+                    } else {
+                        ctx.fillText("🙋‍♂️", targetMe.x, targetMe.y + 50);
+                    }
+
+                    // FIXED COLLISION: When they meet
+                    if (player.x + 40 > targetMe.x) {
                         isGameOver = true;
-                        ctx.font = "50px Arial"; ctx.fillText("💖", canvas.width/2 - 25, canvas.height/2);
-                        setTimeout(() => showSection('screen-surprise-btn'), 1000);
+                        ctx.font = "50px Arial";
+                        ctx.fillText("💖", canvas.width/2 - 25, canvas.height/2);
+                        // Using a more reliable delay to show the next screen
+                        setTimeout(() => {
+                            showSection('screen-surprise-btn');
+                        }, 800);
                     }
                 }
+                requestAnimationFrame(update);
             }
-            requestAnimationFrame(update);
         }
     </script>
 </body>
-</html>
+    </html>
