@@ -1,251 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>For Amberly Valanka Fernandes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Amberly Valanka Fernandes</title>
+    <style>
+        :root { --pink: #ff4d6d; --dark: #590d22; --light: #fff0f3; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); overflow: hidden; touch-action: manipulation; }
+        .screen { position: absolute; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 0.5s; background: var(--light); z-index: 10; }
+        .hidden { display: none !important; }
+        
+        /* UI Elements */
+        .card { background: white; padding: 25px; width: 85%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px dashed var(--pink); box-sizing: border-box; }
+        #display-img { max-width: 90%; max-height: 40vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
+        .letter-content { width: 85%; max-height: 55vh; overflow-y: auto; background: white; padding: 20px; border-radius: 15px; border-left: 5px solid var(--pink); text-align: left; font-size: 0.9rem; line-height: 1.5; white-space: pre-line; box-sizing: border-box; }
+        
+        /* Buttons */
+        button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 10px; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3); transition: 0.2s; }
+        #no-btn { background: #555; position: relative; }
+        .surprise-btn { background: #ff0054; font-size: 1.5rem; padding: 20px 40px; animation: pulse 1.5s infinite; }
+        
+        /* Game Area */
+        #gameCanvas { background: #87CEEB; width: 100vw; height: 50vh; display: block; border-top: 4px solid var(--pink); }
+        #touch-zone { width: 100vw; height: 25vh; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: var(--pink); font-size: 1.2rem; }
 
-<style>
-:root { --pink:#ff4d6d; --dark:#590d22; --light:#fff0f3; }
-body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--light);color:var(--dark);overflow:hidden;touch-action:manipulation;}
-.screen{position:absolute;width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--light);}
-.hidden{display:none!important;}
-.card{background:white;padding:25px;width:85%;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);border:3px dashed var(--pink);}
-#display-img{max-width:90%;max-height:40vh;border:5px solid white;border-radius:10px;box-shadow:0 5px 15px rgba(0,0,0,0.2);}
-.letter-content{width:85%;max-height:55vh;overflow:auto;background:white;padding:20px;border-radius:15px;border-left:5px solid var(--pink);text-align:left;font-size:0.9rem;white-space:pre-line;}
-button{background:var(--pink);color:white;border:none;padding:12px 25px;border-radius:50px;font-size:1.1rem;font-weight:bold;margin:10px;}
-#no-btn{background:#555;position:relative;}
-.restart-btn{background:#555;font-size:0.9rem;}
-.surprise-btn{background:#ff0054;font-size:1.5rem;padding:20px 40px;}
-#gameCanvas{background:#87CEEB;width:100vw;height:50vh;border-top:4px solid var(--pink);}
-#touch-zone{width:100vw;height:25vh;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;color:var(--pink);}
-</style>
+        /* Video Styling */
+        .video-container { width: 300px; height: 530px; background: #000; border-radius: 15px; overflow: hidden; box-shadow: 0 0 25px var(--pink); border: 4px solid white; position: relative; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    </style>
 </head>
-
 <body>
 
-<div id="screen-card" class="screen">
-<div class="card">
-<h1 style="color:var(--pink)">Happy Valentine's Day</h1>
-<p>To: Amberly Valanka Fernandes</p>
-<button onclick="showSection('screen-slideshow')">Open 💌</button>
-</div>
-</div>
+    <div id="screen-card" class="screen">
+        <div class="card">
+            <h1 style="color: var(--pink); font-size: 1.4rem;">Happy Valentine's Day</h1>
+            <p>To: Amberly Valanka Fernandes</p>
+            <button onclick="showSection('screen-slideshow')">Open 💌</button>
+        </div>
+    </div>
 
-<div id="screen-slideshow" class="screen hidden">
-<img id="display-img" src="Snapchat-1108914825.jpg">
-<p id="slide-text"></p>
-<button onclick="nextSlide()">Next ❤️</button>
-</div>
+    <div id="screen-slideshow" class="screen hidden">
+        <img id="display-img" src="Snapchat-1108914825.jpg">
+        <p id="slide-text" style="font-size: 1rem; italic; padding: 0 15px;"></p>
+        <button onclick="nextSlide()">Next ❤️</button>
+    </div>
 
-<div id="screen-letter" class="screen hidden">
-<div class="letter-content">
-<h2 style="text-align:center">My Dearest Amberly</h2>
-I love you more than pizzas and chocolates ❤️
-</div>
-<button onclick="showSection('screen-proposal')">Continue</button>
-</div>
+    <div id="screen-letter" class="screen hidden">
+        <div class="letter-content">
+            <h2 style="text-align:center">My Dearest Amberly,</h2>
+            <p>To my first love and my ultimate foodie girl, Amberly Valanka Fernandes. I wanted to write something that truly captures how I feel about you. From the first day we met, you’ve brought a flavor to my life that I never knew was missing. Like my favorite meal, you are comforting, exciting, and something I can never get enough of. 
 
-<div id="screen-proposal" class="screen hidden">
-<h1 id="proposal-title">Will you be my Valentine?</h1>
-<button onclick="respond('yes')">YES ❤️</button>
-<button id="no-btn" onclick="handleNo()">NO 😭</button>
-</div>
+            Seeing your face in these photos reminds me of every laugh we’ve shared and every goofy filter we’ve ever used. You have this incredible way of making even the simplest moments feel like a grand adventure. 
 
-<div id="screen-game" class="screen hidden">
-<div style="padding:10px;font-weight:bold;background:white;width:100%;display:flex;justify-content:space-around;">
-Score: <span id="score">0</span>/10
-<button id="mini-restart" class="restart-btn hidden" onclick="resetGameOnly()">Try Again</button>
-</div>
+            I love you more than all the pizzas and chocolates in the world!</p>
+        </div>
+        <button onclick="showSection('screen-proposal')">Continue...</button>
+    </div>
 
-<canvas id="gameCanvas"></canvas>
+    <div id="screen-proposal" class="screen hidden">
+        <h1 id="proposal-title" style="font-size: 1.8rem;">Will you be my Valentine?</h1>
+        <div id="btn-container">
+            <button onclick="respond('yes')">YES! ❤️</button>
+            <button id="no-btn" onmouseover="handleNo()" onclick="handleNo()">NO 😭</button>
+        </div>
+    </div>
 
-<div id="touch-zone" onclick="handleJump()">TAP TO JUMP</div>
-</div>
+    <div id="screen-game" class="screen hidden">
+        <div id="game-ui" style="padding: 10px; font-weight: bold; background: white; width: 100%; display: flex; justify-content: space-around; align-items: center;">
+            <span>Score: <span id="score">0</span> / 10</span>
+            <button id="mini-restart" style="background:#555; font-size:0.8rem;" class="hidden" onclick="resetGameOnly()">Restart 🔄</button>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="touch-zone" onclick="handleJump()">
+            <span>TAP TO JUMP!</span>
+            <span style="font-size: 0.8rem; font-weight: normal;">(Meet me at 10 points)</span>
+        </div>
+    </div>
 
-<div id="screen-surprise-btn" class="screen hidden">
-<h1 style="color:var(--pink)">We belong together ❤️</h1>
-<button class="surprise-btn" onclick="playFinalSurprise()">OPEN SURPRISE 🎁</button>
-</div>
+    <div id="screen-surprise-btn" class="screen hidden">
+        <h1 style="color: var(--pink)">I'm yours! ❤️</h1>
+        <p>Ready for your final surprise?</p>
+        <button class="surprise-btn" onclick="playFinalSurprise()">OPEN SURPRISE 🎁</button>
+    </div>
 
-<div id="screen-video" class="screen hidden">
-<video id="finalVid"
-controls
-playsinline
-muted
-preload="auto"
-style="max-height:70vh;border-radius:15px;background:black;">
-<source src="surprise.mp4" type="video/mp4">
-</video>
+    <div id="screen-video" class="screen hidden">
+        <div class="video-container">
+            <video id="finalVid" controls playsinline>
+                <source src="surprise.mp4" type="video/mp4">
+            </video>
+        </div>
+        <p id="vid-error" style="color:red; font-size:0.8rem; display:none;">Video not found. Check if it's named surprise.mp4</p>
+        <button onclick="location.reload()">Watch Again ❤️</button>
+    </div>
 
-<button onclick="location.reload()">Restart ❤️</button>
-</div>
+    <script>
+        const images = [
+            { src: 'Snapchat-1108914825.jpg', msg: "The first time you stole my heart..." },
+            { src: 'Snapchat-2038672580.jpg', msg: "My beautiful foodie girl!" },
+            { src: 'Snapchat-359429037.jpg', msg: "I love our goofy moments." },
+            { src: 'Snapchat-756657078.jpg', msg: "Every photo of you is my favorite." },
+            { src: 'Snapchat-502016680.jpg', msg: "Amberly, you are amazing." }
+        ];
 
-<script>
-const images=[
-{src:'Snapchat-1108914825.jpg',msg:"The first time you stole my heart"},
-{src:'Snapchat-2038672580.jpg',msg:"My foodie queen"},
-{src:'Snapchat-359429037.jpg',msg:"Goofy love"},
-{src:'Snapchat-756657078.jpg',msg:"Favorite moments"},
-{src:'Snapchat-502016680.jpg',msg:"You are amazing"}
-];
+        let currentSlide = 0;
+        let gameActive = false;
+        let score = 0;
+        let isGameOver = false;
+        let noCount = 0;
+        let player, obstacles, targetMe, gameSpeed, canvas, ctx, myImg;
 
-let currentSlide=0;
-let gameActive=false;
-let score=0;
-let isGameOver=false;
-let noCount=0;
-let player,obstacles,targetMe,canvas,ctx,myImg;
+        function showSection(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'screen-game') initGame();
+        }
 
-document.getElementById("slide-text").innerText=images[0].msg;
+        function nextSlide() {
+            currentSlide++;
+            if (currentSlide < images.length) {
+                document.getElementById('display-img').src = images[currentSlide].src;
+                document.getElementById('slide-text').innerText = images[currentSlide].msg;
+            } else { showSection('screen-letter'); }
+        }
+        document.getElementById('slide-text').innerText = images[0].msg;
 
-function showSection(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
-if(id==="screen-game") initGame();
-}
+        function handleNo() {
+            const noBtn = document.getElementById('no-btn');
+            const title = document.getElementById('proposal-title');
+            noCount++;
+            title.innerText = "Nice try! 😜";
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = Math.random() * 70 + 'vw';
+            noBtn.style.top = Math.random() * 70 + 'vh';
+            if(noCount > 5) {
+                noBtn.innerText = "YES! ❤️";
+                noBtn.style.background = "var(--pink)";
+                noBtn.onclick = () => respond('yes');
+            }
+        }
 
-function nextSlide(){
-currentSlide++;
-if(currentSlide<images.length){
-document.getElementById("display-img").src=images[currentSlide].src;
-document.getElementById("slide-text").innerText=images[currentSlide].msg;
-}else showSection("screen-letter");
-}
+        function respond(type) {
+            if(type === 'yes') {
+                const v = document.getElementById('finalVid');
+                v.load(); // Forces browser to find video early
+                showSection('screen-game');
+            }
+        }
 
-function handleNo(){
-const btn=document.getElementById("no-btn");
-btn.style.position="absolute";
-btn.style.left=Math.random()*70+"vw";
-btn.style.top=Math.random()*70+"vh";
-noCount++;
-if(noCount>5){
-btn.innerText="Fine YES ❤️";
-btn.onclick=()=>respond('yes');
-btn.style.background="var(--pink)";
-}
-}
+        function playFinalSurprise() {
+            showSection('screen-video');
+            const v = document.getElementById('finalVid');
+            v.play().catch(() => {
+                document.getElementById('vid-error').style.display = 'block';
+            });
+        }
 
-function respond(type){
-if(type==="yes"){
-document.getElementById("finalVid").load();
-showSection("screen-game");
-}
-}
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.5;
+            myImg = new Image();
+            myImg.src = '1000042285_imgupscaler.ai_Beta_2K.jpg';
+            resetGameOnly();
+            if(!gameActive) { gameActive = true; update(); spawnObstacle(); }
+        }
 
-function playFinalSurprise(){
-const v=document.getElementById("finalVid");
-showSection("screen-video");
-v.currentTime=0;
-v.muted=true;
-v.play().then(()=>setTimeout(()=>v.muted=false,300))
-.catch(()=>alert("Tap play ▶"));
-}
+        function resetGameOnly() {
+            score = 0; isGameOver = false; gameSpeed = 5; obstacles = [];
+            document.getElementById('score').innerText = "0";
+            document.getElementById('mini-restart').classList.add('hidden');
+            player = { x: 50, y: canvas.height - 80, w: 50, h: 50, dy: 0, jumpForce: 15, gravity: 0.8, grounded: false };
+            targetMe = { x: canvas.width + 200, y: canvas.height - 110, w: 90, h: 90 };
+        }
 
-function initGame(){
-canvas=document.getElementById("gameCanvas");
-ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight*0.5;
+        function spawnObstacle() {
+            if(!isGameOver && score < 10 && !document.getElementById('screen-game').classList.contains('hidden')) {
+                obstacles.push({ x: canvas.width + 50, y: canvas.height - 70 });
+            }
+            setTimeout(spawnObstacle, 1500);
+        }
 
-myImg=new Image();
-myImg.src="1000042285_imgupscaler.ai_Beta_2K.jpg";
+        function handleJump() {
+            if(player.grounded && !isGameOver) { player.dy = -player.jumpForce; player.grounded = false; }
+        }
 
-resetGameOnly();
-
-if(!gameActive){
-gameActive=true;
-update();
-spawnObstacle();
-}
-}
-
-function resetGameOnly(){
-score=0;
-isGameOver=false;
-obstacles=[];
-document.getElementById("score").innerText=0;
-document.getElementById("mini-restart").classList.add("hidden");
-
-player={x:50,y:canvas.height-80,w:50,h:50,dy:0,jumpForce:15,gravity:0.8,grounded:false};
-targetMe={x:canvas.width+200,y:canvas.height-110,w:90,h:90};
-}
-
-function spawnObstacle(){
-if(!isGameOver && score<10){
-obstacles.push({x:canvas.width+50,y:canvas.height-70});
-}
-setTimeout(spawnObstacle,1500);
-}
-
-function handleJump(){
-if(player.grounded && !isGameOver){
-player.dy=-player.jumpForce;
-player.grounded=false;
-}
-}
-
-function update(){
-
-if(isGameOver){
-if(gameActive) requestAnimationFrame(update);
-return;
-}
-
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="#2ecc71";
-ctx.fillRect(0,canvas.height-30,canvas.width,30);
-
-player.dy+=player.gravity;
-player.y+=player.dy;
-
-if(player.y>canvas.height-80){
-player.y=canvas.height-80;
-player.grounded=true;
-}
-
-ctx.font="40px Arial";
-ctx.fillText("💃",player.x,player.y+40);
-
-obstacles.forEach((ob,i)=>{
-ob.x-=5;
-ctx.fillText("🧍",ob.x,ob.y+35);
-
-if(player.x<ob.x+25 && player.x+35>ob.x && player.y<ob.y+25){
-isGameOver=true;
-document.getElementById("mini-restart").classList.remove("hidden");
-}
-
-if(ob.x<-50){
-obstacles.splice(i,1);
-score++;
-document.getElementById("score").innerText=score;
-}
-});
-
-if(score>=10){
-
-if(targetMe.x>canvas.width-120) targetMe.x-=2;
-
-if(myImg.complete)
-ctx.drawImage(myImg,targetMe.x,targetMe.y,targetMe.w,targetMe.h);
-
-if(player.x+player.w>targetMe.x+10){
-
-isGameOver=true;
-
-setTimeout(()=>{
-gameActive=false;
-showSection("screen-surprise-btn");
-},800);
-
-return;
-}
-}
-
-if(gameActive) requestAnimationFrame(update);
-}
-</script>
-
+        function update() {
+            if(!isGameOver) {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                ctx.fillStyle = "#2ecc71"; ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+                player.dy += player.gravity; player.y += player.dy;
+                if(player.y > canvas.height - 80) { player.y = canvas.height - 80; player.grounded = true; }
+                ctx.font = "40px Arial"; ctx.fillText("💃", player.x, player.y + 40);
+                obstacles.forEach((ob, i) => {
+                    ob.x -= gameSpeed; ctx.fillText("🧍‍♂️", ob.x, ob.y + 35);
+                    if(player.x < ob.x + 25 && player.x + 35 > ob.x && player.y < ob.y + 25 && player.y + 35 > ob.y) {
+                        isGameOver = true;
+                        document.getElementById('mini-restart').classList.remove('hidden');
+                    }
+                    if(ob.x < -50) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
+                });
+                if (score >= 10) {
+                    if (targetMe.x > canvas.width - 120) targetMe.x -= 2;
+                    if (myImg.complete) ctx.drawImage(myImg, targetMe.x, targetMe.y, targetMe.w, targetMe.h);
+                    if (player.x + player.w > targetMe.x + 10) {
+                        isGameOver = true;
+                        ctx.font = "50px Arial"; ctx.fillText("💖", canvas.width/2 - 25, canvas.height/2);
+                        setTimeout(() => showSection('screen-surprise-btn'), 1000);
+                    }
+                }
+            }
+            requestAnimationFrame(update);
+        }
+    </script>
 </body>
 </html>
