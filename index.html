@@ -9,12 +9,22 @@
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); overflow: hidden; touch-action: manipulation; }
         .screen { position: absolute; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 0.5s; background: var(--light); z-index: 10; }
         .hidden { display: none !important; }
+        
+        /* Layout Elements */
         .card { background: white; padding: 25px; width: 85%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px dashed var(--pink); box-sizing: border-box; }
         #display-img { max-width: 90%; max-height: 40vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
         .letter-content { width: 85%; max-height: 55vh; overflow-y: auto; background: white; padding: 20px; border-radius: 15px; border-left: 5px solid var(--pink); text-align: left; font-size: 0.9rem; line-height: 1.5; white-space: pre-line; box-sizing: border-box; }
-        button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 10px; }
+        
+        /* Buttons */
+        button { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 10px; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3); }
+        .restart-btn { background: #555; font-size: 0.9rem; padding: 8px 15px; }
+        .surprise-btn { background: #ff0054; font-size: 1.5rem; padding: 20px 40px; animation: pulse 1.5s infinite; }
+        
+        /* Game Area */
         #gameCanvas { background: #87CEEB; width: 100vw; height: 50vh; display: block; border-top: 4px solid var(--pink); }
-        #touch-zone { width: 100vw; height: 25vh; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--pink); font-size: 1.2rem; }
+        #touch-zone { width: 100vw; height: 25vh; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: var(--pink); font-size: 1.2rem; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -36,7 +46,11 @@
     <div id="screen-letter" class="screen hidden">
         <div class="letter-content">
             <h2 style="text-align:center">My Dearest Amberly,</h2>
-            <p>To my first love and my ultimate foodie girl, Amberly Valanka Fernandes... (Your letter here)</p>
+            <p>To my first love and my ultimate foodie girl, Amberly Valanka Fernandes. I wanted to write something that truly captures how I feel about you. From the first day we met, you’ve brought a flavor to my life that I never knew was missing. Like my favorite meal, you are comforting, exciting, and something I can never get enough of. 
+
+            Seeing your face in these photos reminds me of every laugh we’ve shared and every goofy filter we’ve ever used. You have this incredible way of making even the simplest moments feel like a grand adventure. 
+
+            I love you more than all the pizzas and chocolates in the world!</p>
         </div>
         <button onclick="showSection('screen-proposal')">Continue...</button>
     </div>
@@ -44,24 +58,37 @@
     <div id="screen-proposal" class="screen hidden">
         <h1 style="font-size: 1.8rem;">Will you be my Valentine?</h1>
         <button onclick="respond('yes')">YES! ❤️</button>
-        <button id="no-btn" onmouseover="moveNo()">NO 😭</button>
+        <button id="no-btn">NO 😭</button>
     </div>
 
     <div id="screen-game" class="screen hidden">
-        <div id="status-msg" style="padding: 10px; font-weight: bold; background: white; width: 100%;">Score: <span id="score">0</span> / 10</div>
+        <div id="game-ui" style="padding: 10px; font-weight: bold; background: white; width: 100%; display: flex; justify-content: space-around; align-items: center;">
+            <span>Score: <span id="score">0</span> / 10</span>
+            <button id="mini-restart" class="restart-btn hidden" onclick="resetGameOnly()">Try Again 🔄</button>
+        </div>
         <canvas id="gameCanvas"></canvas>
-        <div id="touch-zone">TAP TO JUMP!</div>
+        <div id="touch-zone" onclick="handleJump()">
+            <span>TAP TO JUMP!</span>
+            <span style="font-size: 0.8rem; font-weight: normal;">(Reach 10 to find me)</span>
+        </div>
+    </div>
+
+    <div id="screen-surprise-btn" class="screen hidden">
+        <h1 style="color: var(--pink)">We belong together! ❤️</h1>
+        <p>You've won my heart. Now for the surprise...</p>
+        <button class="surprise-btn" onclick="playFinalSurprise()">OPEN SURPRISE 🎁</button>
     </div>
 
     <div id="screen-video" class="screen hidden">
-        <h1 style="color: var(--pink)">YOU FOUND ME! 🏆 ❤️</h1>
-        <video id="finalVid" width="280" height="450" controls playsinline>
-            <source src="Snapchat-746107905.mp4" type="video/mp4">
+        <video id="finalVid" width="300" height="500" controls playsinline>
+            <source src="Snapchat-746107905 (1).mp4" type="video/mp4">
         </video>
-        <p>I Love You Forever, Amberly!</p>
+        <br>
+        <button onclick="location.reload()">Back to Start ❤️</button>
     </div>
 
     <script>
+        // Data
         const images = [
             { src: 'Snapchat-1108914825.jpg', msg: "The first time you stole my heart..." },
             { src: 'Snapchat-2038672580.jpg', msg: "My beautiful foodie girl!" },
@@ -71,6 +98,18 @@
         ];
 
         let currentSlide = 0;
+        let gameActive = false;
+        let score = 0;
+        let isGameOver = false;
+        let player, obstacles, targetMe, gameSpeed, canvas, ctx, myImg;
+
+        // Navigation
+        function showSection(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'screen-game') initGame();
+        }
+
         function nextSlide() {
             currentSlide++;
             if (currentSlide < images.length) {
@@ -80,83 +119,87 @@
         }
         document.getElementById('slide-text').innerText = images[0].msg;
 
-        function showSection(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'screen-game') initGame();
-        }
-
         function respond(type) {
-            if(type === 'yes') {
-                alert("Win the game to find me!");
-                showSection('screen-game');
-            }
+            if(type === 'yes') showSection('screen-game');
         }
 
+        function playFinalSurprise() {
+            showSection('screen-video');
+            document.getElementById('finalVid').play();
+        }
+
+        // Game Logic
         function initGame() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight * 0.5;
 
-            let score = 0;
-            let gameSpeed = 5;
-            let isGameOver = false;
-            let finaleStarted = false;
+            myImg = new Image();
+            myImg.src = '1000042285_imgupscaler.ai_Beta_2K.jpg';
 
-            const myImg = new Image();
-            myImg.src = 'Screenshot_2026-01-29-15-23-55-651_com.snapchat.android.jpg';
-            
-            let player = { x: 50, y: canvas.height - 80, w: 50, h: 50, dy: 0, jumpForce: 15, gravity: 0.8, grounded: false };
-            let obstacles = [];
-            let targetMe = { x: canvas.width + 200, y: canvas.height - 110, w: 80, h: 80 }; // Final target
-
-            function spawnObstacle() {
-                if(!isGameOver && score < 10) {
-                    obstacles.push({ x: canvas.width + 50, y: canvas.height - 70, w: 40, h: 40 });
-                    setTimeout(spawnObstacle, Math.random() * 1500 + 1000);
-                }
+            resetGameOnly();
+            if(!gameActive) {
+                gameActive = true;
+                update();
+                spawnObstacle();
             }
+        }
 
-            function jump() {
-                if(player.grounded) {
-                    player.dy = -player.jumpForce;
-                    player.grounded = false;
-                }
-            }
-
-            document.getElementById('touch-zone').addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
+        function resetGameOnly() {
+            score = 0;
+            isGameOver = false;
+            gameSpeed = 5;
+            obstacles = [];
+            document.getElementById('score').innerText = "0";
+            document.getElementById('mini-restart').classList.add('hidden');
+            document.getElementById('touch-zone').style.opacity = "1";
             
-            spawnObstacle();
+            player = { x: 50, y: canvas.height - 80, w: 50, h: 50, dy: 0, jumpForce: 15, gravity: 0.8, grounded: false };
+            targetMe = { x: canvas.width + 200, y: canvas.height - 110, w: 90, h: 90 };
+        }
 
-            function update() {
-                if(isGameOver) return;
+        function spawnObstacle() {
+            if(!isGameOver && score < 10 && document.getElementById('screen-game').className.indexOf('hidden') === -1) {
+                obstacles.push({ x: canvas.width + 50, y: canvas.height - 70 });
+            }
+            setTimeout(spawnObstacle, Math.random() * 1500 + 1000);
+        }
+
+        function handleJump() {
+            if(player.grounded && !isGameOver) {
+                player.dy = -player.jumpForce;
+                player.grounded = false;
+            }
+        }
+
+        function update() {
+            if(!isGameOver) {
                 ctx.clearRect(0,0, canvas.width, canvas.height);
 
-                // Grass
+                // Ground
                 ctx.fillStyle = "#2ecc71";
                 ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
 
-                // Player Physics
+                // Player
                 player.dy += player.gravity;
                 player.y += player.dy;
                 if(player.y > canvas.height - 80) { player.y = canvas.height - 80; player.grounded = true; }
                 
-                // Draw 💃
                 ctx.font = "40px Arial";
                 ctx.fillText("💃", player.x, player.y + 40);
 
-                // Obstacles 🧍‍♂️
+                // Obstacles
                 obstacles.forEach((ob, i) => {
                     ob.x -= gameSpeed;
                     ctx.fillText("🧍‍♂️", ob.x, ob.y + 35);
 
-                    // Collision with Obstacles
                     if(player.x < ob.x + 25 && player.x + 35 > ob.x && player.y < ob.y + 25 && player.y + 35 > ob.y) {
                         isGameOver = true;
-                        alert("Try again! Get to 10 points! ❤️");
-                        location.reload();
+                        document.getElementById('mini-restart').classList.remove('hidden');
+                        document.getElementById('touch-zone').style.opacity = "0.3";
                     }
+
                     if(ob.x < -50) { 
                         obstacles.splice(i, 1); 
                         score++; 
@@ -164,36 +207,29 @@
                     }
                 });
 
-                // Finale Trigger
+                // Finale
                 if (score >= 10) {
-                    finaleStarted = true;
-                    document.getElementById('status-msg').innerText = "LOOK! THERE I AM! ❤️";
-                    document.getElementById('status-msg').style.color = "red";
-                    
-                    // Move your image onto the screen
-                    if (targetMe.x > canvas.width - 120) {
-                        targetMe.x -= 2;
-                    }
+                    if (targetMe.x > canvas.width - 120) targetMe.x -= 2;
+                    if (myImg.complete) ctx.drawImage(myImg, targetMe.x, targetMe.y, targetMe.w, targetMe.h);
+                    else ctx.fillText("🙋‍♂️", targetMe.x, targetMe.y + 50);
 
-                    // Draw your image
-                    if (myImg.complete) {
-                        ctx.drawImage(myImg, targetMe.x, targetMe.y, targetMe.w, targetMe.h);
-                    } else {
-                        ctx.fillText("🙋‍♂️", targetMe.x, targetMe.y + 50);
-                    }
-
-                    // Win Collision (When she touches you)
                     if (player.x + player.w > targetMe.x + 10) {
                         isGameOver = true;
-                        showSection('screen-video');
-                        document.getElementById('finalVid').play();
+                        ctx.font = "50px Arial";
+                        ctx.fillText("💖", canvas.width/2 - 25, canvas.height/2);
+                        setTimeout(() => showSection('screen-surprise-btn'), 1000);
                     }
                 }
-
-                requestAnimationFrame(update);
             }
-            update();
+            requestAnimationFrame(update);
         }
+
+        // Mobile "No" button logic
+        document.getElementById('no-btn').onmouseover = function() {
+            this.style.position = 'absolute';
+            this.style.left = Math.random() * 60 + 'vw';
+            this.style.top = Math.random() * 60 + 'vh';
+        };
     </script>
 </body>
 </html>
