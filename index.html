@@ -9,21 +9,14 @@
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--light); color: var(--dark); overflow: hidden; touch-action: manipulation; }
         .screen { position: absolute; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: 0.5s; background: var(--light); z-index: 10; }
         .hidden { display: none !important; }
-        
-        /* Elements */
         .card { background: white; padding: 25px; width: 85%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 3px dashed var(--pink); box-sizing: border-box; }
         #display-img { max-width: 90%; max-height: 40vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin-bottom: 15px; }
         .letter-content { width: 85%; max-height: 50vh; overflow-y: auto; background: white; padding: 20px; border-radius: 15px; border-left: 5px solid var(--pink); text-align: left; font-size: 0.95rem; line-height: 1.6; white-space: pre-line; box-sizing: border-box; }
-        
-        /* Buttons */
         button { background: var(--pink); color: white; border: none; padding: 14px 28px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin: 10px; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3); transition: 0.3s; z-index: 100; }
-        #no-btn { background: #6c757d; position: relative; white-space: nowrap; }
+        #no-btn { background: #6c757d; position: relative; }
         .surprise-btn { background: #ff0054; font-size: 1.5rem; padding: 20px 40px; animation: pulse 1.5s infinite; border: 4px solid var(--gold); }
-        
-        /* Game */
         #gameCanvas { background: linear-gradient(#87CEEB, #e0f2f1); width: 100vw; height: 50vh; display: block; border-top: 4px solid var(--pink); }
         #touch-zone { width: 100vw; height: 25vh; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--pink); font-size: 1.5rem; }
-
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         @keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
     </style>
@@ -33,7 +26,7 @@
     <div id="screen-card" class="screen">
         <div class="card">
             <h1 style="color: var(--pink);">Hi Amberly! ❤️</h1>
-            <p>I made something special just for you.</p>
+            <p>I made something special for you.</p>
             <button onclick="showSection('screen-slideshow')">Click to Start 💌</button>
         </div>
     </div>
@@ -49,29 +42,40 @@
             <h2 style="text-align:center">To My Dearest Amberly,</h2>
             Every moment with you is like a perfectly cooked meal—full of flavor and making me want more! You're my favorite foodie, my best friend, and my whole heart. 
 
-            I love you more than all the pizzas in the world! (And you know how much I love pizza).
+            I love you more than all the pizzas in the world! 
         </div>
         <button onclick="showSection('screen-proposal')">Next...</button>
     </div>
 
     <div id="screen-proposal" class="screen hidden">
-        <h1 id="prop-text" style="font-size: 2rem;">Will you be my Valentine?</h1>
+        <h1 id="prop-text">Will you be my Valentine?</h1>
         <div id="btn-container">
             <button onclick="respond('yes')">YES! ❤️</button>
             <button id="no-btn" onmouseover="moveNo()" onclick="moveNo()">NO 😭</button>
         </div>
     </div>
 
+    <div id="screen-warning" class="screen hidden">
+        <div class="card">
+            <h2 style="color: var(--pink);">WARNING: HARD MODE!</h2>
+            <p>To see your surprise, reach 50 points!</p>
+            <p style="color: red; font-weight: bold;">Watch out... some of them jump! 🏃‍♂️</p>
+            <h1 style="font-size: 3rem; color: #ff0054; margin: 10px 0;">50</h1>
+            <button onclick="showSection('screen-game')">I'M READY! 🏃‍♀️</button>
+        </div>
+    </div>
+
     <div id="screen-game" class="screen hidden">
-        <div style="background: white; padding: 10px; font-weight: bold; width: 100%; border-bottom: 2px solid #ddd;">
-            Score: <span id="score">0</span> / 10 🕺
+        <div style="background: white; padding: 10px; font-weight: bold; width: 100%;">
+            Score: <span id="score">0</span> / 50 💃
         </div>
         <canvas id="gameCanvas"></canvas>
         <div id="touch-zone" onclick="handleJump()">TAP TO JUMP!</div>
     </div>
 
     <div id="screen-surprise-btn" class="screen hidden">
-        <h1 style="color: var(--pink)">YAY! You did it! 🎉</h1>
+        <h1 style="color: var(--pink)">PRO GAMER STATUS! 🎉</h1>
+        <p>You truly earned this, Amberly!</p>
         <button class="surprise-btn" onclick="playFinalSurprise()">OPEN YOUR GIFT 🎁</button>
     </div>
 
@@ -85,6 +89,7 @@
 
     <audio id="sfx-pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
     <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+    <audio id="sfx-fail" src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"></audio>
 
     <script>
         const images = [
@@ -92,7 +97,7 @@
             { src: 'Snapchat-2038672580.jpg', msg: "My beautiful foodie girl! 🍔" },
             { src: 'Snapchat-359429037.jpg', msg: "I love our goofy moments! 🤪" },
             { src: 'Snapchat-756657078.jpg', msg: "You're just perfect, Amberly." },
-            { src: 'Snapchat-502016680.jpg', msg: "Ready for the question?" }
+            { src: 'Snapchat-502016680.jpg', msg: "Ready for the challenge?" }
         ];
 
         let currentSlide = 0;
@@ -117,24 +122,15 @@
         }
         document.getElementById('slide-text').innerText = images[0].msg;
 
-        // --- PRANK NO BUTTON ---
         function moveNo() {
             const noBtn = document.getElementById('no-btn');
-            const propText = document.getElementById('prop-text');
-            const msgs = ["Wrong way!", "Try again!", "Nope! 😜", "Not happening!", "Amberly, please!", "Error 404: No not found", "I'm spinning!", "Is that your final answer?", "Almost!"];
-            
             noClicks++;
-            propText.innerText = msgs[noClicks % msgs.length];
-            
             noBtn.style.position = 'absolute';
             noBtn.style.left = Math.random() * 70 + 'vw';
             noBtn.style.top = Math.random() * 70 + 'vh';
-            
-            if(noClicks > 6) noBtn.style.animation = "spin 1s infinite linear";
             if(noClicks > 9) {
-                noBtn.innerText = "YES! (I give up) ❤️";
+                noBtn.innerText = "YES! ❤️";
                 noBtn.style.background = "var(--pink)";
-                noBtn.style.animation = "pulse 1s infinite";
                 noBtn.onclick = () => respond('yes');
             }
         }
@@ -142,7 +138,7 @@
         function respond(type) {
             if(type === 'yes') {
                 document.getElementById('sfx-win').play();
-                showSection('screen-game');
+                showSection('screen-warning');
             }
         }
 
@@ -151,7 +147,6 @@
             document.getElementById('finalVid').play();
         }
 
-        // --- GAME LOGIC ---
         function initGame() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
@@ -167,13 +162,22 @@
             isGameOver = false;
             obstacles = [];
             document.getElementById('score').innerText = "0";
-            player = { x: 50, y: canvas.height - 80, dy: 0, jumpForce: 16, gravity: 0.8, grounded: false };
+            player = { x: 50, y: canvas.height - 80, dy: 0, jumpForce: 15, gravity: 0.7, grounded: false };
         }
 
         function spawnObstacle() {
-            if(!isGameOver && score < 10) {
-                obstacles.push({ x: canvas.width + 50, y: canvas.height - 70 });
-                setTimeout(spawnObstacle, 1400 + Math.random() * 400);
+            if(!isGameOver && score < 50) {
+                // Randomly decide if this boy is a jumper
+                let isJumper = Math.random() > 0.6; 
+                obstacles.push({ 
+                    x: canvas.width + 50, 
+                    y: canvas.height - 80, 
+                    dy: 0, 
+                    willJump: isJumper, 
+                    hasJumped: false,
+                    emoji: isJumper ? "🏃‍♂️" : "🧍‍♂️" 
+                });
+                setTimeout(spawnObstacle, 1200 + Math.random() * 600);
             }
         }
 
@@ -189,26 +193,38 @@
         function updateLoop() {
             if(isGameOver) return;
             ctx.clearRect(0,0, canvas.width, canvas.height);
-            
-            // Ground
             ctx.fillStyle = "#2ecc71";
             ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
             
-            // Player
             player.dy += player.gravity;
             player.y += player.dy;
             if(player.y > canvas.height - 80) { player.y = canvas.height - 80; player.grounded = true; }
-            
             ctx.font = "40px Arial";
             ctx.fillText("💃", player.x, player.y + 40);
 
-            // Obstacles
             obstacles.forEach((ob, i) => {
-                ob.x -= 6;
-                ctx.fillText("🧍‍♂️", ob.x, ob.y + 35);
+                ob.x -= (6 + (score / 15)); // Gradually speeds up
 
-                // Collision Logic
-                if(player.x < ob.x + 20 && player.x + 30 > ob.x && player.y > ob.y - 30) {
+                // JUMPING LOGIC FOR OBSTACLES
+                if(ob.willJump && !ob.hasJumped && ob.x < player.x + 200) {
+                    ob.dy = -10; // The boy jumps!
+                    ob.hasJumped = true;
+                }
+                
+                if(ob.hasJumped) {
+                    ob.dy += 0.5; // Gravity for the boy
+                    ob.y += ob.dy;
+                    if(ob.y > canvas.height - 80) ob.y = canvas.height - 80;
+                }
+
+                ctx.fillText(ob.emoji, ob.x, ob.y + 40);
+
+                // COLLISION (More precise for jumping)
+                let dx = player.x - ob.x;
+                let dy = player.y - ob.y;
+                let distance = Math.sqrt(dx*dx + dy*dy);
+                if(distance < 35) {
+                    document.getElementById('sfx-fail').play();
                     resetGame();
                 }
 
@@ -216,7 +232,7 @@
                     obstacles.splice(i, 1); 
                     score++; 
                     document.getElementById('score').innerText = score;
-                    if(score >= 10) {
+                    if(score >= 50) {
                         isGameOver = true;
                         document.getElementById('sfx-win').play();
                         showSection('screen-surprise-btn');
