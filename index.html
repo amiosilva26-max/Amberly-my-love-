@@ -28,6 +28,13 @@
 </head>
 <body>
 
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+    <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+    <audio id="sfx-fail" src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"></audio>
+
     <div id="screen-card" class="screen">
         <div class="card">
             <h1 style="color: var(--pink);">Happy Valentine's Day ❤️</h1>
@@ -64,7 +71,7 @@
         <div class="card">
             <h2 style="color: var(--pink);">The Love Test!</h2>
             <p>Prove your love by reaching 15 points!</p>
-            <p style="color: red; font-weight: bold;">Careful... the boys are jumping today! 🏃‍♂️</p>
+            <p style="color: red; font-weight: bold;">Watch out... the boys are jumping! 🏃‍♂️</p>
             <h1 style="font-size: 3rem; color: #ff0054; margin: 10px 0;">15</h1>
             <button onclick="showSection('screen-game')">START GAME 💃</button>
         </div>
@@ -91,13 +98,6 @@
         <button onclick="location.reload()">Back to Start ❤️</button>
     </div>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="sfx-pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-    <audio id="sfx-win" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
-    <audio id="sfx-fail" src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"></audio>
-
     <script>
         const images = [
             { src: 'Snapchat-1108914825.jpg', msg: "The first time you stole my heart..." },
@@ -114,9 +114,9 @@
         let player, obstacles, canvas, ctx;
 
         function startExperience() {
-            // Browsers need a click to start music
-            document.getElementById('bg-music').volume = 0.4;
-            document.getElementById('bg-music').play();
+            const music = document.getElementById('bg-music');
+            music.volume = 0.5;
+            music.play().catch(e => console.log("Music blocked until more interaction"));
             showSection('screen-slideshow');
         }
 
@@ -136,43 +136,20 @@
         }
         document.getElementById('slide-text').innerText = images[0].msg;
 
-        // --- THE INTERESTING NO BUTTON ---
         function prankNo() {
             const noBtn = document.getElementById('no-btn');
             const propText = document.getElementById('prop-text');
             noClicks++;
-
-            const pranks = [
-                "Are you sure? 🤨",
-                "Try again! 😜",
-                "Wrong button! ❌",
-                "Not an option! 💖",
-                "Click Yes instead! 😉",
-                "I'm shrinking! 🤏",
-                "Now I'm spinning! 🌀",
-                "Can't catch me! 🏃‍♂️",
-                "Getting harder? 😂",
-                "Just give up! ❤️"
-            ];
-
+            const pranks = ["Try again! 😜", "Wrong button! ❌", "Not an option! 💖", "Click Yes! 😉", "I'm shrinking! 🤏", "Spinning! 🌀", "Catch me! 🏃‍♂️", "Give up! ❤️"];
             propText.innerText = pranks[noClicks % pranks.length];
-            
-            // Random movement
             noBtn.style.position = 'absolute';
             noBtn.style.left = Math.random() * 70 + 'vw';
             noBtn.style.top = Math.random() * 70 + 'vh';
-            
-            // Effects based on clicks
-            if(noClicks > 4) noBtn.style.transform = `scale(${1 - noClicks * 0.05})`;
-            if(noClicks > 6) noBtn.style.animation = "spin 1s infinite linear";
-            if(noClicks > 8) noBtn.style.animation = "glitch 0.2s infinite";
-
-            // The final surrender
+            if(noClicks > 5) noBtn.style.transform = `scale(${1 - noClicks * 0.05})`;
+            if(noClicks > 7) noBtn.style.animation = "spin 1s infinite linear";
             if(noClicks > 10) {
                 noBtn.innerText = "OKAY, YES! ❤️";
                 noBtn.style.background = "var(--pink)";
-                noBtn.style.transform = "scale(1.3)";
-                noBtn.style.animation = "pulse 1s infinite";
                 noBtn.style.position = "static";
                 noBtn.onmouseover = null;
                 noBtn.onclick = () => respond('yes');
@@ -188,11 +165,10 @@
 
         function playFinalSurprise() {
             showSection('screen-video');
-            document.getElementById('bg-music').pause(); // Stop music for video
+            document.getElementById('bg-music').pause(); 
             document.getElementById('finalVid').play();
         }
 
-        // --- GAME LOGIC ---
         function initGame() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
@@ -204,9 +180,7 @@
         }
 
         function resetGame() {
-            score = 0;
-            isGameOver = false;
-            obstacles = [];
+            score = 0; isGameOver = false; obstacles = [];
             document.getElementById('score').innerText = "0";
             player = { x: 50, y: canvas.height - 80, dy: 0, jumpForce: 15, gravity: 0.7, grounded: false };
         }
@@ -214,14 +188,7 @@
         function spawnObstacle() {
             if(!isGameOver && score < 15) {
                 let isJumper = Math.random() > 0.6; 
-                obstacles.push({ 
-                    x: canvas.width + 50, 
-                    y: canvas.height - 80, 
-                    dy: 0, 
-                    willJump: isJumper, 
-                    hasJumped: false,
-                    emoji: isJumper ? "🏃‍♂️" : "🧍‍♂️" 
-                });
+                obstacles.push({ x: canvas.width + 50, y: canvas.height - 80, dy: 0, willJump: isJumper, hasJumped: false, emoji: isJumper ? "🏃‍♂️" : "🧍‍♂️" });
                 setTimeout(spawnObstacle, 1400 + Math.random() * 600);
             }
         }
@@ -240,47 +207,17 @@
             ctx.clearRect(0,0, canvas.width, canvas.height);
             ctx.fillStyle = "#2ecc71";
             ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
-            
-            player.dy += player.gravity;
-            player.y += player.dy;
+            player.dy += player.gravity; player.y += player.dy;
             if(player.y > canvas.height - 80) { player.y = canvas.height - 80; player.grounded = true; }
-            ctx.font = "40px Arial";
-            ctx.fillText("💃", player.x, player.y + 40);
-
+            ctx.font = "40px Arial"; ctx.fillText("💃", player.x, player.y + 40);
             obstacles.forEach((ob, i) => {
                 ob.x -= 6;
-
-                if(ob.willJump && !ob.hasJumped && ob.x < player.x + 180) {
-                    ob.dy = -10;
-                    ob.hasJumped = true;
-                }
-                
-                if(ob.hasJumped) {
-                    ob.dy += 0.5;
-                    ob.y += ob.dy;
-                    if(ob.y > canvas.height - 80) ob.y = canvas.height - 80;
-                }
-
+                if(ob.willJump && !ob.hasJumped && ob.x < player.x + 180) { ob.dy = -10; ob.hasJumped = true; }
+                if(ob.hasJumped) { ob.dy += 0.5; ob.y += ob.dy; if(ob.y > canvas.height - 80) ob.y = canvas.height - 80; }
                 ctx.fillText(ob.emoji, ob.x, ob.y + 40);
-
-                let dx = player.x - ob.x;
-                let dy = player.y - ob.y;
-                let distance = Math.sqrt(dx*dx + dy*dy);
-                if(distance < 38) {
-                    document.getElementById('sfx-fail').play();
-                    resetGame();
-                }
-
-                if(ob.x < -50) { 
-                    obstacles.splice(i, 1); 
-                    score++; 
-                    document.getElementById('score').innerText = score;
-                    if(score >= 15) {
-                        isGameOver = true;
-                        document.getElementById('sfx-win').play();
-                        showSection('screen-surprise-btn');
-                    }
-                }
+                let dx = player.x - ob.x; let dy = player.y - ob.y;
+                if(Math.sqrt(dx*dx + dy*dy) < 38) { document.getElementById('sfx-fail').play(); resetGame(); }
+                if(ob.x < -50) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; if(score >= 15) { isGameOver = true; document.getElementById('sfx-win').play(); showSection('screen-surprise-btn'); } }
             });
             requestAnimationFrame(updateLoop);
         }
